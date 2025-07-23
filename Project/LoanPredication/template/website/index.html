@@ -1,0 +1,45 @@
+{% extends "website/layout.html" %}
+{% load static %}  <!-- ✅ Load static files here -->
+
+
+{% block title %}
+Home - Loan Eligibility Analysis
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div id="loanCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'images/loan1.webp' %}" class="d-block w-100" alt="Loan Image">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/loan2.webp' %}" class="d-block w-100" alt="Loan Image">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/loan3.webp' %}" class="d-block w-100" alt="Loan Image">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#loanCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#loanCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div> <!-- ✅ Closing div for the container -->
+
+<div class="container mt-4 text-center">
+    <h1>Welcome to Loan Eligibility Analysis</h1>
+    <p>Analyze your loan eligibility and explore data insights.</p>
+    
+    <div class="container start-section">
+        <h2>Start Your Analysis</h2>
+        <p>Click below to begin your loan eligibility analysis.</p>
+        <a href="{% url 'analysis' %}" class="btn btn-dark mt-3">Let's Start</a>
+    </div>
+</div> <!-- ✅ Closing div for the second container -->
+
+{% endblock %}

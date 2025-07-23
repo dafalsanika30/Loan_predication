@@ -1,0 +1,209 @@
+{% extends "website/layout.html" %}
+{% load static %}
+
+{% block title %}
+Prediction - Loan Eligibility Analysis
+{% endblock %}
+
+{% block content %}
+<!-- Upload Section -->
+<div class="container mt-5">   
+    <!-- Loan Eligibility Prediction Form -->
+    <div class="loan-form p-4 border rounded shadow bg-light mt-4">
+        <h2 class="mb-4 text-center">Check Loan Eligibility</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if not hide_form %}
+        <form method="POST" action="{% url 'predict' %}#result" id="predictionForm">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Annual Income:</label>
+                    <input type="number" step="0.01" min="10000" max="10000000000" name="income_annum" class="form-control" required value="{{ request.POST.income_annum }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Loan Amount:</label>
+                    <input type="number" step="0.01" min="1000" max="10000000" name="loan_amount" class="form-control" required value="{{ request.POST.loan_amount }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">CIBIL Score:</label>
+                    <input type="number" min="300" max="900" name="cibil_score" class="form-control" required value="{{ request.POST.cibil_score }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Residential Assets Value:</label>
+                    <input type="number" step="0.01" min="0" max="100000000" name="residential_assets_value" class="form-control" required value="{{ request.POST.residential_assets_value }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Commercial Assets Value:</label>
+                    <input type="number" step="0.01" min="0" max="100000000" name="commercial_assets_value" class="form-control" required value="{{ request.POST.commercial_assets_value }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Luxury Assets Value:</label>
+                    <input type="number" step="0.01" min="0" max="50000000" name="luxury_assets_value" class="form-control" required value="{{ request.POST.luxury_assets_value }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Bank Asset Value:</label>
+                    <input type="number" step="0.01" min="0" max="500000000" name="bank_asset_value" class="form-control" required value="{{ request.POST.bank_asset_value }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Loan Term (in years):</label>
+                    <input type="number" min="1" max="40" name="loan_term" class="form-control" required value="{{ request.POST.loan_term }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="dependents" class="form-label">Number of Dependents:</label>
+                    <input type="number" min="0" max="10" name="no_of_dependents" class="form-control" required value="{{ request.POST.no_of_dependents }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="education" class="form-label">Education:</label>
+                    <select class="form-control" name="education" required>
+                        <option value="Graduate" {% if request.POST.education == "Graduate" %}selected{% endif %}>Graduate</option>
+                        <option value="Not Graduate" {% if request.POST.education == "Not Graduate" %}selected{% endif %}>Not Graduate</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="self_employed" class="form-label">Self Employed:</label>
+                    <select class="form-control" name="self_employed" required>
+                        <option value="Yes" {% if request.POST.self_employed == "Yes" %}selected{% endif %}>Yes</option>
+                        <option value="No" {% if request.POST.self_employed == "No" %}selected{% endif %}>No</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Check Eligibility</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Result Section -->
+<div id="result" class="container mt-5">
+    <div class="card shadow-lg p-4 text-center">
+        <h2>🔍 Loan Approval Prediction Result</h2>
+        <hr>
+
+        {% if approval_message %}
+            <div class="p-4 rounded border shadow-sm bg-light">
+                <h4 class="fw-bold mb-3 text-center">
+                    🧾 Loan Approval Probability: {{ approval_message }}
+                </h4>
+
+                <div class="progress mb-4" style="height: 30px;">
+                    <div class="progress-bar 
+                                {% if prediction_prob >= 70 %}
+                                    bg-success
+                                {% elif prediction_prob >= 50 %}
+                                    bg-warning
+                                {% else %}
+                                    bg-danger
+                                {% endif %}"
+                        role="progressbar"
+                        style="width: {{ prediction_prob }}%; font-size: 16px;"
+                        aria-valuenow="{{ prediction_prob }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                        {{ prediction_prob }}%
+                    </div>
+                </div>
+
+                {% if prediction_prob >= 70 %}
+                    <div class="alert alert-success p-4 rounded text-center">
+                        <h3 class="text-success fw-bold mb-2">✅ Approved!</h3>
+                        <p class="mb-0">You're in a great financial position. Your loan has a <strong>high chance of approval</strong>. Keep it up!</p>
+                    </div>
+                {% elif prediction_prob >= 50 %}
+                    <div class="alert alert-warning p-4 rounded text-center">
+                        <h3 class="text-warning fw-bold mb-2">🟡 Fair Chance!</h3>
+                        <p class="mb-0">Your loan has a <strong>moderate chance of approval</strong>. Improve your credit score or income for better results.</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger p-4 rounded text-center">
+                        <h3 class="text-danger fw-bold mb-2">❌ Low Approval Chance</h3>
+                        <p class="mb-0">Unfortunately, your loan has a <strong>low chance of approval</strong>. Try improving your financial profile before applying again.</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="alert alert-info p-4 rounded text-center">
+                <h4 class="text-primary fw-bold">ℹ️ No Prediction Yet</h4>
+                <p class="mb-0">Submit your details to check your loan approval probability.</p>
+            </div>
+            {% endif %}
+
+
+
+        {% if error %}
+            <div class="alert alert-warning p-4 rounded">
+                <h3 class="text-danger fw-bold">❌ Error:</h3>
+                <p class="mb-0">{{ error }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="predictingModal" tabindex="-1" aria-labelledby="predictingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title w-100" id="predictingModalLabel">🔄 Predicting...</h5>
+      </div>
+      <div class="modal-body">
+        <div class="spinner-border text-success mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Please wait while we check your eligibility based on your details.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Scroll to result
+        if (window.location.hash === "#result") {
+            document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+        }
+
+        // Modal on form submission
+        const form = document.getElementById("predictionForm");
+        const modalElement = document.getElementById("predictingModal");
+        const modal = new bootstrap.Modal(modalElement);
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop form from submitting
+            modal.show();       // Show modal
+
+            setTimeout(() => {
+                form.submit();  // Submit form after delay
+            }, 900); // Delay in milliseconds
+        });
+    });
+</script>
+{% endblock %}

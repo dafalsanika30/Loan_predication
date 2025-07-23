@@ -1,0 +1,113 @@
+{% extends "website/layout.html" %}
+
+{% block title %}
+Analysis - Loan Eligibility Analysis
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="upload-section p-4 border rounded shadow bg-light">
+        <h2 class="mb-4">Upload Your Dataset for Analysis</h2>
+
+        <!-- CSV Upload Form -->
+        <form method="POST" enctype="multipart/form-data" action="{% url 'upload_csv' %}" id="uploadForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Upload and Train</button>
+        </form>
+    </div>
+</div>
+
+<!-- Results Section -->
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">📊 Analysis Results</h2>
+
+        {% if last_accuracy and last_recall and last_f1_score and accuracy and recall and f1_score %}
+            <p class="text-center text-muted">Displaying results from the latest analysis.</p>
+        {% else %}
+            <p class="text-center text-danger">
+                ❌ No previous model found. Please upload a dataset to train the model.
+            </p>
+        {% endif %}
+
+        <!-- Performance Metrics -->
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <div class="metric-box bg-light p-3 rounded shadow-sm">
+                    <h5 class="text-primary">🎯 Accuracy</h5>
+                    <p class="display-6 font-weight-bold">
+                        {{ accuracy|default:last_accuracy|floatformat:2 }}%
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-box bg-light p-3 rounded shadow-sm">
+                    <h5 class="text-success">📈 Recall</h5>
+                    <p class="display-6 font-weight-bold">
+                        {{ recall|default:last_recall|floatformat:2 }}%
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-box bg-light p-3 rounded shadow-sm">
+                    <h5 class="text-info">📊 F1 Score</h5>
+                    <p class="display-6 font-weight-bold">
+                        {{ f1_score|default:last_f1_score|floatformat:2 }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <!-- {% if confusion_matrix %}
+            <div class="text-center mt-5">
+                <h3 class="text-secondary">📊 Confusion Matrix</h3>
+                <img src="data:image/png;base64,{{ confusion_matrix }}" alt="Confusion Matrix" class="img-fluid rounded shadow">
+            </div>
+        {% elif last_confusion_matrix %}
+            <div class="text-center mt-5">
+                <h3 class="text-secondary">📊 Previous Confusion Matrix</h3>
+                <img src="data:image/png;base64,{{ last_confusion_matrix }}" alt="Previous Confusion Matrix" class="img-fluid rounded shadow">
+            </div>
+        {% endif %} -->
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="analyzingModal" tabindex="-1" aria-labelledby="analyzingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title w-100" id="analyzingModalLabel">🔄 Analyzing...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Please wait while we process your dataset and train the model.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("uploadForm");
+        const modalElement = document.getElementById("analyzingModal");
+        const modal = new bootstrap.Modal(modalElement);
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop the default form submission
+            modal.show();       // Show the modal
+
+            // Submit the form after 300ms (or adjust time as needed)
+            setTimeout(() => {
+                form.submit();
+            }, 900);
+        });
+    });
+</script>
+{% endblock %}

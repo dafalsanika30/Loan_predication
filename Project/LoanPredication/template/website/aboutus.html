@@ -1,0 +1,59 @@
+{% extends "website/layout.html" %}
+
+{% block title %}
+About Us - Loan Eligibility Analysis
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 text-center">
+    <p>AI-powered insights for smarter financial decisions.</p>
+</div>
+
+<!-- Mission Section -->
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="text-success">🎯 Our Mission</h3>
+        <p class="mb-0">
+            We aim to simplify and streamline the loan eligibility process using machine learning. By providing accurate predictions and actionable insights, we help users make better financial decisions with confidence.
+        </p>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="text-info">⚙️ How It Works</h3>
+        <ul class="text-start mb-0">
+            <li><strong>📁 Data Upload:</strong> Upload your loan application data as a CSV file.</li>
+            <li><strong>🧹 Data Processing:</strong> The system cleans and prepares the data.</li>
+            <li><strong>🤖 Model Training:</strong> Machine learning algorithm trains on your data.</li>
+            <li><strong>📊 Evaluation:</strong> View accuracy, precision, recall, and F1 score with visuals.</li>
+            <li><strong>🔮 Prediction:</strong> Fill out the form to check your loan approval chance.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Why Choose Us Section -->
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="text-warning">🌟 Why Choose Us?</h3>
+        <ul class="text-start mb-0">
+            <li>✅ AI-powered and fast predictions</li>
+            <li>✅ User-friendly and secure platform</li>
+            <li>✅ Visual feedback with charts</li>
+            <li>✅ Real-time analysis results</li>
+            <li>✅ Designed for both individuals and professionals</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="container mt-4 mb-5 text-center">
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3">🚀 Ready to begin?</h4>
+        <a href="{% url 'analysis' %}" class="btn btn-dark">Start Your Analysis</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,1 +1,22 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loanpredication-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: loanpredication
+  template:
+    metadata:
+      labels:
+        app: loanpredication
+    spec:
+      containers:
+      - name: loanpredication
+        image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/loanpredication:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DJANGO_SETTINGS_MODULE
+          value: "LoanPredication.settings"

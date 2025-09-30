@@ -74,37 +74,6 @@ loan-prediction/
 │-- README.md
 ```
 
----
-
-## 🧪 How to Run
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-username/loan-prediction.git
-cd loan-prediction
-```
-
-2. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Run Jupyter Notebook or Python scripts:
-
-```bash
-jupyter notebook notebooks/eda.ipynb
-```
-
-4. Train models:
-
-```bash
-python src/train_model.py
-```
-
----
-
 ## 🔮 Future Improvements
 
 * Hyperparameter tuning for better accuracy.

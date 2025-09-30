@@ -56,18 +56,6 @@ This project predicts **loan approval eligibility** based on applicant details u
 
 ---
 
-## 📈 Model Performance
-
-| Model               | Accuracy | Recall | Specificity | Precision |
-| ------------------- | -------- | ------ | ----------- | --------- |
-| Logistic Regression | ~X%      | ~X%    | ~X%         | ~X%       |
-| Decision Tree       | ~X%      | ~X%    | ~X%         | ~X%       |
-| Random Forest       | ~X%      | ~X%    | ~X%         | ~X%       |
-
-*(Replace ~X% with your actual evaluation results)*
-
----
-
 ## 📂 Project Structure
 
 ```

@@ -1,0 +1,14 @@
+cat > .dockerignore <<EOF
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+venv/
+.env
+.git
+.gitignore
+Dockerfile
+Jenkinsfile
+sonar-project.properties
+EOF

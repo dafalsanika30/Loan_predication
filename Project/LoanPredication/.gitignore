@@ -1,0 +1,11 @@
+cat > .gitignore <<EOF
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.env
+venv/
+staticfiles/
+media/
+EOF

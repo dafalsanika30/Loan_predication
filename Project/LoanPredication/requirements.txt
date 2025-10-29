@@ -3,4 +3,5 @@ django-bootstrap5
 joblib
 pandas
 numpy
+
 scikit-learn

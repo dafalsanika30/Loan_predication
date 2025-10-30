@@ -13,7 +13,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8000
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s CMD wget -qO- http://localhost:8000/health/ || exit 1
+#HEALTHCHECK --interval=10s --timeout=3s --start-period=10s CMD wget -qO- http://localhost:8000/health/ || exit 1
 
 
 CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
+

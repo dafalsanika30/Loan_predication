@@ -7,7 +7,7 @@ pipeline {
                 // Clone repo
                 git branch: 'main',
                     url: 'https://github.com/dafalsanika30/Loan_predication.git',
-                    credentialsId: 'your-credential-id'
+                    credentialsId: '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'
             }
         }
         
@@ -60,3 +60,4 @@ pipeline {
         }
     }
 }
+

@@ -1,56 +1,62 @@
 pipeline {
     agent any
-
-    environment {
-        AWS_DEFAULT_REGION = 'ap-south-1'
-        ECR_REPO = '123456789012.dkr.ecr.ap-south-1.amazonaws.com/loanpredication'
-        IMAGE_TAG = "latest"
-        SONARQUBE = 'SonarQubeServer'
-    }
-
+    
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/dafalsanika30/Loan_predication.git'
+                // Clone repo
+                git branch: 'main',
+                    url: 'https://github.com/dafalsanika30/Loan_predication.git',
+                    credentialsId: 'your-credential-id'
             }
         }
-
-        stage('Install dependencies & Run Tests') {
-            steps {
-                sh 'pip install -r requirements.txt'
-                sh 'python manage.py test || true'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv("${SONARQUBE}") {
-                    sh 'sonar-scanner'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh """
-                    $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 123456789012.dkr.ecr.ap-south-1.amazonaws.com)
-                    docker build -t $ECR_REPO:$IMAGE_TAG .
-                    docker push $ECR_REPO:$IMAGE_TAG
-                    """
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
+        
+        stage('Setup Python Environment') {
             steps {
                 sh '''
-                aws eks update-kubeconfig --name my-cluster --region ap-south-1
-                kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Migrations') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                python manage.py makemigrations
+                python manage.py migrate
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                python manage.py test
+                '''
+            }
+        }
+
+        stage('Run Server (Optional)') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                nohup python manage.py runserver 0.0.0.0:8000 &
                 '''
             }
         }
     }
-
+    
+    post {
+        success {
+            echo '✅ Build and tests successful!'
+        }
+        failure {
+            echo '❌ Build failed. Check logs.'
+        }
+    }
 }

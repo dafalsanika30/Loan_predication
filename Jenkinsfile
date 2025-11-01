@@ -1,8 +1,17 @@
 pipeline {
     agent {
-        docker {
-            image 'python:3.10'   // ✅ Use an official Python image
-            args '-v /tmp:/tmp'
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: python
+    image: python:3.10
+    command:
+    - cat
+    tty: true
+"""
         }
     }
 

@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone repo
+                git branch: 'main',
+                    url: 'https://github.com/dafalsanika30/Loan_predication.git',
+                    credentialsId: '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'
+            }
+        }
+        
+        stage('Setup Python Environment') {
+            steps {
+                sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Migrations') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                python manage.py makemigrations
+                python manage.py migrate
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                python manage.py test
+                '''
+            }
+        }
+
+        stage('Run Server (Optional)') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                nohup python manage.py runserver 0.0.0.0:8000 &
+                '''
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Build and tests successful!'
+        }
+        failure {
+            echo '❌ Build failed. Check logs.'
+        }
+    }
+}
+
